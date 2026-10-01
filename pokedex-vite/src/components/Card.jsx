@@ -10,7 +10,8 @@ const Card = ({ data }) => {
       <img src={imgUrl} alt="pokemon" />
       <div className="text">
         <h4 className="name">
-          <span className="pokeId">1.</span>Bulbasaur
+          <span className="pokeId">{pokeId}.</span>
+          {data.name}
         </h4>
       </div>
     </div>

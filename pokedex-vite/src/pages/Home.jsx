@@ -12,6 +12,22 @@ const Home = () => {
     return storedOffset ? parseInt(storedOffset, 10) : 0;
   });
 
+  // Page navigation
+
+  // Next Page
+  function handleNextPage() {
+    const newOffset = offset + 50;
+    setOffset(newOffset);
+    sessionStorage.setItem("offset", newOffset.toString());
+  }
+
+  // Previous Page
+  function handlePreviousPage() {
+    const newOffset = offSet <= 50 ? 0 : offset - 50;
+    setOffset(newOffset);
+    sessionStorage.setItem("offset", newOffset.toString());
+  }
+
   useEffect(() => {
     async function fetchPokemon() {
       const apiUrl = `https://pokeapi.co/api/v2/pokemon?limit=50&offset=${offset}`;
