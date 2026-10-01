@@ -23,7 +23,8 @@ const Home = () => {
 
   // Previous Page
   function handlePreviousPage() {
-    const newOffset = offSet <= 50 ? 0 : offset - 50;
+    const newOffset = offset <= 50 ? 0 : offset - 50;
+
     setOffset(newOffset);
     sessionStorage.setItem("offset", newOffset.toString());
   }
@@ -31,7 +32,6 @@ const Home = () => {
   useEffect(() => {
     async function fetchPokemon() {
       const apiUrl = `https://pokeapi.co/api/v2/pokemon?limit=50&offset=${offset}`;
-
       const res = await fetch(apiUrl);
       const data = await res.json();
 
@@ -48,15 +48,11 @@ const Home = () => {
       <Feed pokemons={pokemons} />
 
       <div className="pagination">
-        <button
-          className="btn"
-          onClick={() => setOffset((prev) => Math.max(prev - 50, 0))}
-          disabled={offset === 0}
-        >
+        <button className="btn" onClick={handlePreviousPage}>
           Prev
         </button>
 
-        <button className="btn" onClick={() => setOffset((prev) => prev + 50)}>
+        <button className="btn" onClick={handleNextPage}>
           Next
         </button>
       </div>

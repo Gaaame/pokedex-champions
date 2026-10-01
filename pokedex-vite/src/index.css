@@ -57,3 +57,9 @@ a {
   align-items: center;
   justify-content: center;
 }
+
+.logo {
+  cursor: pointer;
+  height: 50px;
+  width: 50px;
+}

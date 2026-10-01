@@ -10,6 +10,7 @@ const Card = ({ data }) => {
       <img src={imgUrl} alt="pokemon" />
       <div className="text">
         <h4 className="name">
+          {/* pokemon id and name */}
           <span className="pokeId">{pokeId}.</span>
           {data.name}
         </h4>

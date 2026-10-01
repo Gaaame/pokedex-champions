@@ -1,7 +1,7 @@
 import React from "react";
 
 //Components
-import logo from "../assets/pokedex-logo.png";
+import logo from "../assets/Pokeball-PNG.png";
 import Button from "./Button";
 
 //Styles
@@ -11,7 +11,7 @@ function Header() {
   return (
     <header>
       <nav>
-        <img src={logo} alt="Pokemon Logo" />
+        <img className="logo" src={logo} alt="Pokemon Logo" />
         <div className="search-container">
           <input type="text" placeholder="Search Pokemon" />
           <Button label={"Search"} />
