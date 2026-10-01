@@ -4,6 +4,9 @@ import React from "react";
 import logo from "../assets/pokedex-logo.png";
 import Button from "./Button";
 
+//Styles
+import "../css/Header.css";
+
 function Header() {
   return (
     <header>
@@ -19,5 +22,3 @@ function Header() {
 }
 
 export default Header;
-
-rfce;
