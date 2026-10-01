@@ -52,10 +52,85 @@ a {
 }
 
 .loadingScreen {
-  height: 100vh;
+  min-height: 100vh;
+  width: 100%;
+
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+
+  gap: 20px;
+}
+/* Poké Ball */
+.loadingBall {
+  position: relative;
+
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(
+    to bottom,
+    #ef5350 0%,
+    #ef5350 46%,
+    #222 46%,
+    #222 54%,
+    #fff 54%,
+    #fff 100%
+  );
+  border: 5px solid #222;
+
+  animation: bounce 1.2s ease-in-out infinite;
+} /* Center button */
+.loadingBall::after {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border: 5px solid #222;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px white;
+} /* Loading text */
+.loadingText {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  letter-spacing: 1px;
+}
+.loadingText::after {
+  content: "...";
+  display: inline-block;
+  width: 20px;
+  overflow: hidden;
+  vertical-align: bottom;
+  animation: dots 1.5s steps(4, end) infinite;
+} /* Ball animation */
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(180deg);
+  }
+} /* Loading dots */
+@keyframes dots {
+  0% {
+    width: 0;
+  }
+  33% {
+    width: 7px;
+  }
+  66% {
+    width: 14px;
+  }
+  100% {
+    width: 20px;
+  }
 }
 
 .logo {

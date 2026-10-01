@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 // components
 import Header from "../components/Header";
 import Feed from "../components/Feed";
+import LoadingScreen from "../components/LoadingScreen";
 
 const Home = () => {
   const [pokemons, setPokemons] = useState([]);
@@ -12,11 +13,12 @@ const Home = () => {
     return storedOffset ? parseInt(storedOffset, 10) : 0;
   });
 
-  // Page navigation
+  const [loading, setLoading] = useState(true);
 
   // Next Page
   function handleNextPage() {
     const newOffset = offset + 50;
+
     setOffset(newOffset);
     sessionStorage.setItem("offset", newOffset.toString());
   }
@@ -31,11 +33,24 @@ const Home = () => {
 
   useEffect(() => {
     async function fetchPokemon() {
-      const apiUrl = `https://pokeapi.co/api/v2/pokemon?limit=50&offset=${offset}`;
-      const res = await fetch(apiUrl);
-      const data = await res.json();
+      setLoading(true);
 
-      setPokemons(data.results);
+      try {
+        const apiUrl = `https://pokeapi.co/api/v2/pokemon?limit=50&offset=${offset}`;
+
+        const res = await fetch(apiUrl);
+        const data = await res.json();
+
+        setPokemons(data.results);
+
+        // Small loading delay
+        setTimeout(() => {
+          setLoading(false);
+        }, 500);
+      } catch (error) {
+        console.error("Error fetching Pokemon:", error);
+        setLoading(false);
+      }
     }
 
     fetchPokemon();
@@ -43,19 +58,25 @@ const Home = () => {
 
   return (
     <div className="Home maxWidth">
-      <Header />
+      {loading ? (
+        <LoadingScreen />
+      ) : (
+        <>
+          <Header />
 
-      <Feed pokemons={pokemons} />
+          <Feed pokemons={pokemons} />
 
-      <div className="pagination">
-        <button className="btn" onClick={handlePreviousPage}>
-          Prev
-        </button>
+          <div className="pagination">
+            <button className="btn" onClick={handlePreviousPage}>
+              Prev
+            </button>
 
-        <button className="btn" onClick={handleNextPage}>
-          Next
-        </button>
-      </div>
+            <button className="btn" onClick={handleNextPage}>
+              Next
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };

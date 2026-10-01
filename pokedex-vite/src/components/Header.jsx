@@ -2,7 +2,7 @@ import React from "react";
 
 //Components
 import logo from "../assets/Pokeball-PNG.png";
-import Button from "./Button";
+import Button from "./Button.jsx";
 
 //Styles
 import "../css/Header.css";
