@@ -5,7 +5,7 @@ import LoadingScreen from "../components/LoadingScreen";
 import ErrorScreen from "../components/ErrorScreen";
 import Button from "../components/Button";
 import "../css/SearchedPokemon.css";
-import Stats from "../components/Stat";
+import Stats from "../components/Stats";
 
 // TYPE COLORS
 const colours = {

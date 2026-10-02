@@ -1,5 +1,6 @@
 import React from "react";
 import Stat from "../components/Stat";
+import "../css/SearchedPokemon.css";
 
 const Stats = ({ stats }) => {
   return (
