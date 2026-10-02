@@ -11,8 +11,8 @@ const Stats = ({ stats }) => {
       <Stat parameter={"HP"} value={stats.hp} />
       <Stat parameter={"Attack"} value={stats.attack} />
       <Stat parameter={"Defence"} value={stats.defence} />
-      <Stat parameter={"Spl Attack"} value={stats.splAttack} />
-      <Stat parameter={"Spl Defence"} value={stats.splDefence} />
+      <Stat parameter={"Special Attack"} value={stats.splAttack} />
+      <Stat parameter={"Special Defence"} value={stats.splDefence} />
       <Stat parameter={"Speed"} value={stats.speed} />
     </div>
   );
