@@ -4,8 +4,10 @@ import { useParams, Link } from "react-router-dom";
 import LoadingScreen from "../components/LoadingScreen";
 import ErrorScreen from "../components/ErrorScreen";
 import Button from "../components/Button";
+import "../css/SearchedPokemon.css";
+import Stats from "../components/Stat";
 
-//TYPE COLORS
+// TYPE COLORS
 const colours = {
   normal: "#A8A77A",
   fire: "#EE8130",
@@ -34,6 +36,18 @@ const SearchedPokemon = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
+  const [stats, setStats] = useState({
+    height: 0,
+    weight: 0,
+    exp: 0,
+    hp: 0,
+    attack: 0,
+    defence: 0,
+    splAttack: 0,
+    splDefence: 0,
+    speed: 0,
+  });
+
   useEffect(() => {
     const apiUrl = `https://pokeapi.co/api/v2/pokemon/${pokemon}`;
 
@@ -51,6 +65,26 @@ const SearchedPokemon = () => {
         const data = await response.json();
 
         setSelectedPokemon(data);
+
+        setStats({
+          // Height: decimeters → feet
+          height: (data.height / 3.048).toFixed(1),
+
+          // Weight: hectograms → kilograms
+          weight: (data.weight / 10).toFixed(1),
+
+          // Base experience
+          exp: data.base_experience,
+
+          // Pokémon stats
+          hp: data.stats[0].base_stat,
+          attack: data.stats[1].base_stat,
+          defence: data.stats[2].base_stat,
+          splAttack: data.stats[3].base_stat,
+          splDefence: data.stats[4].base_stat,
+          speed: data.stats[5].base_stat,
+        });
+
         setLoading(false);
       } catch (error) {
         console.error(error);
@@ -62,9 +96,13 @@ const SearchedPokemon = () => {
     fetchPokemon();
   }, [pokemon]);
 
-  if (loading) return <LoadingScreen />;
+  if (loading) {
+    return <LoadingScreen />;
+  }
 
-  if (error) return <ErrorScreen />;
+  if (error) {
+    return <ErrorScreen />;
+  }
 
   return (
     <div className="searched-pokemon">
@@ -77,10 +115,11 @@ const SearchedPokemon = () => {
       <div className="pokemon-details">
         <div className="searched-pokemon_info">
           <h4>{selectedPokemon.name}</h4>
+
           <div className="type">
-            {selectedPokemon.types.map((type, index) => (
+            {selectedPokemon.types.map((type) => (
               <span
-                key={index}
+                key={type.type.name}
                 style={{
                   backgroundColor: colours[type.type.name],
                 }}
@@ -89,6 +128,8 @@ const SearchedPokemon = () => {
               </span>
             ))}
           </div>
+
+          <Stats stats={stats} />
         </div>
 
         <div className="previewImage">
