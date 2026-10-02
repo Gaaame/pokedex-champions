@@ -33,6 +33,8 @@ const SearchedPokemon = () => {
   const { pokemon } = useParams();
 
   const [selectedPokemon, setSelectedPokemon] = useState(null);
+  const [species, setSpecies] = useState(null);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -49,40 +51,46 @@ const SearchedPokemon = () => {
   });
 
   useEffect(() => {
-    const apiUrl = `https://pokeapi.co/api/v2/pokemon/${pokemon}`;
-
     async function fetchPokemon() {
       setLoading(true);
       setError(false);
 
       try {
-        const response = await fetch(apiUrl);
+        // Fetch both Pokémon and species data
+        const [pokemonResponse, speciesResponse] = await Promise.all([
+          fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`),
+          fetch(`https://pokeapi.co/api/v2/pokemon-species/${pokemon}`),
+        ]);
 
-        if (!response.ok) {
+        if (!pokemonResponse.ok || !speciesResponse.ok) {
           throw new Error("Pokemon not found");
         }
 
-        const data = await response.json();
+        const pokemonData = await pokemonResponse.json();
+        const speciesData = await speciesResponse.json();
 
-        setSelectedPokemon(data);
+        // Store API data
+        setSelectedPokemon(pokemonData);
+        setSpecies(speciesData);
 
+        // Store stats
         setStats({
           // Height: decimeters → feet
-          height: (data.height / 3.048).toFixed(1),
+          height: (pokemonData.height / 3.048).toFixed(1),
 
           // Weight: hectograms → kilograms
-          weight: (data.weight / 10).toFixed(1),
+          weight: (pokemonData.weight / 10).toFixed(1),
 
           // Base experience
-          exp: data.base_experience,
+          exp: pokemonData.base_experience,
 
           // Pokémon stats
-          hp: data.stats[0].base_stat,
-          attack: data.stats[1].base_stat,
-          defence: data.stats[2].base_stat,
-          splAttack: data.stats[3].base_stat,
-          splDefence: data.stats[4].base_stat,
-          speed: data.stats[5].base_stat,
+          hp: pokemonData.stats[0].base_stat,
+          attack: pokemonData.stats[1].base_stat,
+          defence: pokemonData.stats[2].base_stat,
+          splAttack: pokemonData.stats[3].base_stat,
+          splDefence: pokemonData.stats[4].base_stat,
+          speed: pokemonData.stats[5].base_stat,
         });
 
         setLoading(false);
@@ -104,6 +112,11 @@ const SearchedPokemon = () => {
     return <ErrorScreen />;
   }
 
+  // Get English genus
+  const genus = species?.genera.find(
+    (item) => item.language.name === "en",
+  )?.genus;
+
   return (
     <div className="searched-pokemon">
       <div className="searched-pokemon_header">
@@ -115,6 +128,8 @@ const SearchedPokemon = () => {
       <div className="pokemon-details">
         <div className="searched-pokemon_info">
           <h4>{selectedPokemon.name}</h4>
+
+          <h3>{genus}</h3>
 
           <div className="type">
             {selectedPokemon.types.map((type) => (

@@ -7,7 +7,6 @@ const Stats = ({ stats }) => {
     <div className="stats">
       <Stat parameter={"Height"} value={stats.height} units={"ft"} />
       <Stat parameter={"Weight"} value={stats.weight} units={"kg"} />
-      <Stat parameter={"Base Exp"} value={stats.exp} />
       <Stat parameter={"HP"} value={stats.hp} />
       <Stat parameter={"Attack"} value={stats.attack} />
       <Stat parameter={"Defence"} value={stats.defence} />
