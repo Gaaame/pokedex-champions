@@ -1,42 +1,162 @@
 .pokemon-feed {
-  margin-top: 6rem;
+  width: 100%;
+  max-width: 1100px;
+  margin: 6rem auto 2rem;
+  padding: 0 1rem;
+
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.25rem;
 }
 
+/* ========================================
+   Pokemon Card
+======================================== */
+
 .card {
-  padding: 10px;
-  border-radius: 5px;
+  position: relative;
+
+  min-height: 210px;
+  padding: 1.25rem 1rem;
+
   display: flex;
-  gap: 1rem;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
+
+  gap: 1rem;
+
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+
   cursor: pointer;
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
 }
 
 .card:hover {
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.08);
+  transform: translateY(-5px);
+
+  border-color: rgba(99, 144, 240, 0.35);
+
+  box-shadow:
+    0 12px 25px rgba(0, 0, 0, 0.08),
+    0 4px 10px rgba(99, 144, 240, 0.08);
 }
 
-.card img {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
+.card:active {
+  transform: translateY(-2px);
 }
+
+/* ========================================
+   Pokemon Image
+======================================== */
+
+.card img {
+  width: 120px;
+  height: 120px;
+
+  object-fit: contain;
+
+  transition: transform 0.25s ease;
+}
+
+.card:hover img {
+  transform: scale(1.08);
+}
+
+/* ========================================
+   Card Text
+======================================== */
 
 .card .text {
   width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 0.2rem;
+
   text-align: center;
 }
 
 .card .pokeId {
-  font-size: 0.8rem;
-  margin-right: 5px;
-  font-weight: 400;
+  color: #94a3b8;
+
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  letter-spacing: 0.05em;
 }
 
 .card .name {
+  color: #1e293b;
+
+  font-size: 1rem;
+  font-weight: 700;
+
   text-transform: capitalize;
+}
+
+/* ========================================
+   Mobile
+======================================== */
+
+@media (max-width: 600px) {
+  .pokemon-feed {
+    margin-top: 5.5rem;
+    padding-inline: 0.75rem;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .card {
+    min-height: 190px;
+    padding: 1rem 0.75rem;
+  }
+
+  .card img {
+    width: 100px;
+    height: 100px;
+  }
+
+  .card .name {
+    font-size: 0.9rem;
+  }
+}
+
+/* ========================================
+   Small Mobile
+======================================== */
+
+@media (max-width: 380px) {
+  .pokemon-feed {
+    gap: 0.6rem;
+  }
+
+  .card {
+    min-height: 175px;
+    padding: 0.75rem 0.5rem;
+  }
+
+  .card img {
+    width: 85px;
+    height: 85px;
+  }
+
+  .card .pokeId {
+    font-size: 0.7rem;
+  }
+
+  .card .name {
+    font-size: 0.85rem;
+  }
 }
