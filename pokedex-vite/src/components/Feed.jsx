@@ -8,7 +8,7 @@ const Feed = ({ pokemons }) => {
   return (
     <section className="pokemon-feed">
       {pokemons?.map((pokemon) => (
-        <Link to={"/${pokemon.name}"} key={pokemon.name}>
+        <Link to={`/${pokemon.name}`} key={pokemon.name}>
           <Card data={pokemon} />
         </Link>
       ))}

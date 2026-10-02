@@ -62,13 +62,20 @@ a {
 
   gap: 20px;
 }
+
+.logo {
+  cursor: pointer;
+  height: 50px;
+  width: 50px;
+}
+
 /* Poké Ball */
 .loadingBall {
   position: relative;
-
   width: 80px;
   height: 80px;
   border-radius: 50%;
+
   background: linear-gradient(
     to bottom,
     #ef5350 0%,
@@ -78,10 +85,22 @@ a {
     #fff 54%,
     #fff 100%
   );
+
   border: 5px solid #222;
 
-  animation: bounce 1.2s ease-in-out infinite;
-} /* Center button */
+  animation: rotateBall 1s linear infinite;
+}
+
+@keyframes rotateBall {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* Center button */
 .loadingBall::after {
   content: "";
   position: absolute;
@@ -109,15 +128,8 @@ a {
   vertical-align: bottom;
   animation: dots 1.5s steps(4, end) infinite;
 } /* Ball animation */
-@keyframes bounce {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-12px) rotate(180deg);
-  }
-} /* Loading dots */
+
+/* Loading dots */
 @keyframes dots {
   0% {
     width: 0;
@@ -131,10 +143,4 @@ a {
   100% {
     width: 20px;
   }
-}
-
-.logo {
-  cursor: pointer;
-  height: 50px;
-  width: 50px;
 }
