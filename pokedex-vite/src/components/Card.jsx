@@ -15,8 +15,8 @@ const Card = ({ data }) => {
 
       <div className="text">
         <h4 className="name">
-          {/* pokemon id and name */}
-          <span className="pokeId">{pokeId}.</span>
+          {/* pokemon name */}
+
           {data.name}
         </h4>
       </div>

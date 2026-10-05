@@ -1,18 +1,57 @@
 import React from "react";
-import Stat from "../components/Stat";
-import "../css/SearchedPokemon.css";
+import "../css/Stats.css";
 
 const Stats = ({ stats }) => {
+  const statList = [
+    {
+      name: "HP",
+      value: stats.hp,
+    },
+    {
+      name: "Attack",
+      value: stats.attack,
+    },
+    {
+      name: "Defense",
+      value: stats.defence,
+    },
+    {
+      name: "Sp. Attack",
+      value: stats.splAttack,
+    },
+    {
+      name: "Sp. Defense",
+      value: stats.splDefence,
+    },
+    {
+      name: "Speed",
+      value: stats.speed,
+    },
+  ];
+
   return (
     <div className="stats">
-      <Stat parameter={"Height"} value={stats.height} units={"ft"} />
-      <Stat parameter={"Weight"} value={stats.weight} units={"kg"} />
-      <Stat parameter={"HP"} value={stats.hp} />
-      <Stat parameter={"Attack"} value={stats.attack} />
-      <Stat parameter={"Defence"} value={stats.defence} />
-      <Stat parameter={"Special Attack"} value={stats.splAttack} />
-      <Stat parameter={"Special Defence"} value={stats.splDefence} />
-      <Stat parameter={"Speed"} value={stats.speed} />
+      <div className="stats-title">
+        <h3>Base Stats</h3>
+      </div>
+
+      {statList.map((stat) => (
+        <div className="stat" key={stat.name}>
+          <div className="stat-info">
+            <span className="stat-name">{stat.name}</span>
+            <span className="stat-value">{stat.value}</span>
+          </div>
+
+          <div className="stat-bar">
+            <div
+              className="stat-bar_fill"
+              style={{
+                width: `${Math.min((stat.value / 150) * 100, 100)}%`,
+              }}
+            />
+          </div>
+        </div>
+      ))}
     </div>
   );
 };
