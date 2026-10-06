@@ -94,18 +94,31 @@ a {
 ======================================== */
 
 .pagination {
-  width: 100%;
-  margin-block: 2rem 1.5rem;
-
   display: flex;
-  align-items: center;
   justify-content: center;
-
-  gap: 1rem;
+  align-items: center;
+  gap: 8px;
+  margin: 40px 0;
+  flex-wrap: wrap;
 }
 
-.pagination button {
-  min-width: 110px;
+.pagination .btn {
+  min-width: 42px;
+  height: 42px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.pagination .btn.active {
+  background: #333;
+  color: white;
+}
+
+.pagination .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* ========================================

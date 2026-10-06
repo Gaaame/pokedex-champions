@@ -14,12 +14,15 @@ async function getJSON(url) {
   if (cache.has(url)) return cache.get(url);
 
   const response = await fetch(url);
+
   if (!response.ok) {
     throw new Error(`${response.status} ${url}`);
   }
 
   const data = await response.json();
+
   cache.set(url, data);
+
   return data;
 }
 
@@ -30,6 +33,7 @@ const EXCLUDED_FORMS =
 
 function isAllowedForm(name, isDefault) {
   if (isDefault) return true;
+
   return !EXCLUDED_FORMS.test(name);
 }
 
@@ -39,7 +43,7 @@ function isAllowedForm(name, isDefault) {
 // }
 
 const Home = () => {
-  // Limit to pokemon champions roster
+  // Limit to Pokémon Champions roster
   const championsMC = [
     // Gen 1
     3, 6, 9, 15, 18, 24, 25, 26, 36, 38, 40, 45, 53, 59, 65, 68, 71, 80, 83, 94,
@@ -79,7 +83,9 @@ const Home = () => {
     1018, 1019,
   ];
 
-  const ITEMS_PER_PAGE = 50; // species per page (forms add extra cards)
+  // Number of species displayed per page
+  // Forms are added in addition to these species
+  const ITEMS_PER_PAGE = 50;
 
   const [pokemons, setPokemons] = useState([]);
 
@@ -105,24 +111,23 @@ const Home = () => {
 
   const [loading, setLoading] = useState(true);
 
-  // Next Page
-  function handleNextPage() {
-    const nextOffset = offset + ITEMS_PER_PAGE;
+  // Pagination information
+  const totalPages = Math.ceil(championsMC.length / ITEMS_PER_PAGE);
 
-    if (nextOffset >= championsMC.length) {
+  const currentPage = Math.floor(offset / ITEMS_PER_PAGE) + 1;
+
+  // Change page
+  function handlePageChange(page) {
+    // Prevent going outside the available pages
+    if (page < 1 || page > totalPages) {
       return;
     }
 
-    setOffset(nextOffset);
-    sessionStorage.setItem("offset", nextOffset.toString());
-  }
+    const newOffset = (page - 1) * ITEMS_PER_PAGE;
 
-  // Previous Page
-  function handlePreviousPage() {
-    const previousOffset = Math.max(0, offset - ITEMS_PER_PAGE);
+    setOffset(newOffset);
 
-    setOffset(previousOffset);
-    sessionStorage.setItem("offset", previousOffset.toString());
+    sessionStorage.setItem("offset", newOffset.toString());
   }
 
   useEffect(() => {
@@ -145,7 +150,8 @@ const Home = () => {
           .filter((r) => r.status === "fulfilled")
           .map((r) => r.value);
 
-        // 2. Collect every allowed variety (default, megas, regionals...)
+        // 2. Collect every allowed variety
+        // default, megas, regionals, etc.
         const varieties = speciesList.flatMap((species) =>
           species.varieties
             .filter((v) => isAllowedForm(v.pokemon.name, v.is_default))
@@ -155,18 +161,24 @@ const Home = () => {
             })),
         );
 
-        // 3. Fetch the actual pokemon data for each variety
+        // 3. Fetch the actual Pokémon data for each variety
         const pokemonResults = await Promise.allSettled(
           varieties.map(async (v) => {
             const data = await getJSON(v.url);
-            return { ...data, speciesId: v.speciesId };
+
+            return {
+              ...data,
+              speciesId: v.speciesId,
+            };
           }),
         );
 
         const pokemonData = pokemonResults
           .filter((r) => r.status === "fulfilled")
           .map((r) => r.value)
-          // keep dex order, with forms right after their base species
+
+          // Keep Pokédex order,
+          // with forms right after their base species
           .sort((a, b) => a.speciesId - b.speciesId || a.id - b.id);
 
         if (isMounted) {
@@ -207,19 +219,37 @@ const Home = () => {
 
           <Feed pokemons={pokemons} />
 
+          {/* Pagination */}
           <div className="pagination">
+            {/* Previous */}
             <button
               className="btn"
-              onClick={handlePreviousPage}
-              disabled={offset === 0}
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
             >
               Prev
             </button>
 
+            {/* Page Numbers */}
+            {Array.from({ length: totalPages }, (_, index) => {
+              const page = index + 1;
+
+              return (
+                <button
+                  key={page}
+                  className={`btn ${currentPage === page ? "active" : ""}`}
+                  onClick={() => handlePageChange(page)}
+                >
+                  {page}
+                </button>
+              );
+            })}
+
+            {/* Next */}
             <button
               className="btn"
-              onClick={handleNextPage}
-              disabled={offset + ITEMS_PER_PAGE >= championsMC.length}
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
             >
               Next
             </button>
