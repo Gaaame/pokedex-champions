@@ -262,6 +262,96 @@ a {
 }
 
 /* ========================================
+  Error Screen
+======================================== */
+
+.ErrorScreen {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+/* Pokéball */
+.ErrorScreen__ball {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 6px solid #222;
+  background: linear-gradient(to bottom, #ee3b3b 0 46%, #222 46% 54%, #fff 54%);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  animation: ErrorScreen-wobble 2s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.ErrorScreen__ball-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30px;
+  height: 30px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 6px solid #222;
+  background: #fff;
+}
+
+.ErrorScreen__title {
+  margin: 0.5rem 0 0;
+  font-size: 1.75rem;
+  font-weight: 800;
+}
+
+.ErrorScreen__message {
+  margin: 0;
+  max-width: 420px;
+  line-height: 1.5;
+  opacity: 0.75;
+}
+
+.ErrorScreen__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 0.75rem;
+}
+
+@keyframes ErrorScreen-wobble {
+  0%,
+  60%,
+  100% {
+    transform: rotate(0deg);
+  }
+  10% {
+    transform: rotate(-14deg);
+  }
+  20% {
+    transform: rotate(12deg);
+  }
+  30% {
+    transform: rotate(-8deg);
+  }
+  40% {
+    transform: rotate(6deg);
+  }
+  50% {
+    transform: rotate(-3deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ErrorScreen__ball {
+    animation: none;
+  }
+}
+
+/* ========================================
    Accessibility
 ======================================== */
 
