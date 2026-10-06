@@ -1,0 +1,66 @@
+/* ================================
+   Abilities
+================================ */
+
+.abilities {
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.abilities h3 {
+  margin: 0 0 1rem;
+  color: #1e293b;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ability-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.ability-list span {
+  padding: 0.7rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.ability-list span:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* ================================
+   Mobile
+================================ */
+
+@media (max-width: 600px) {
+  .abilities {
+    margin-top: 1.5rem;
+  }
+
+  .abilities h3 {
+    font-size: 1rem;
+  }
+
+  .ability-list {
+    justify-content: center;
+  }
+
+  .ability-list span {
+    padding: 0.6rem 0.85rem;
+    font-size: 0.85rem;
+  }
+}
