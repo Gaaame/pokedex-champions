@@ -140,12 +140,25 @@
   margin: 0 auto;
   padding-bottom: 5rem;
 
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-direction: column;
 
   gap: 1.5rem;
 }
 
+/* Abilities | Mega Forms | Alternate Forms */
+.pokemon-content_row {
+  display: flex;
+  align-items: stretch;
+
+  gap: 1.5rem;
+}
+
+/* flex: 1 1 0 + min-width: 0 = equal widths regardless of content */
+.pokemon-content_row > .content-card {
+  flex: 1 1 0;
+  min-width: 0;
+}
 /* ================================
    Content Cards
 ================================ */
@@ -291,12 +304,6 @@
   text-transform: capitalize;
 }
 
-/* Mega Forms gets full width */
-
-.mega-forms {
-  grid-column: 1 / -1;
-}
-
 /* ================================
    Tablet
 ================================ */
@@ -306,8 +313,13 @@
     gap: 2rem;
   }
 
-  .pokemon-content {
+  .pokemon-content,
+  .pokemon-content_row {
     gap: 1rem;
+  }
+
+  .pokemon-content_row {
+    flex-direction: column;
   }
 }
 
@@ -350,17 +362,10 @@
   }
 
   .pokemon-content {
-    grid-template-columns: 1fr;
-
     gap: 1rem;
   }
-
   .content-card {
     padding: 1.25rem;
-  }
-
-  .mega-forms {
-    grid-column: auto;
   }
 
   .alternate-form-list,

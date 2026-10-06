@@ -34,6 +34,7 @@ const colours = {
   fairy: "#D685AD",
 };
 
+//GET SPITES
 const SPRITE_BASE =
   "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home";
 
@@ -172,67 +173,71 @@ const SearchedPokemon = () => {
       </div>
 
       {/* Pokemon Information */}
+      {/* Pokemon Information */}
       <div className="pokemon-content">
-        {/* Stats */}
+        {/* Row 1: Stats (full width) */}
         <div className="content-card stats-card">
           <Stats stats={stats} />
         </div>
 
-        {/* Abilities */}
-        <div className="content-card abilities">
-          <h3>Abilities</h3>
+        {/* Row 2: Abilities | Mega Forms | Alternate Forms */}
+        <div className="pokemon-content_row">
+          {/* Abilities */}
+          <div className="content-card abilities">
+            <h3>Abilities</h3>
 
-          <div className="ability-list">
-            {selectedPokemon.abilities.map((item) => (
-              <span key={item.ability.name}>
-                {item.ability.name.replaceAll("-", " ")}
-                {item.is_hidden && " (Hidden)"}
-              </span>
-            ))}
+            <div className="ability-list">
+              {selectedPokemon.abilities.map((item) => (
+                <span key={item.ability.name}>
+                  {item.ability.name.replaceAll("-", " ")}
+                  {item.is_hidden && " (Hidden)"}
+                </span>
+              ))}
+            </div>
           </div>
+
+          {/* Mega Forms */}
+          {megaForms.length > 0 && (
+            <div className="content-card mega-forms">
+              <h3>Mega Forms</h3>
+
+              <div className="mega-form-list">
+                {megaForms.map((variety) => (
+                  <div className="mega-form" key={variety.pokemon.name}>
+                    <img
+                      src={`${SPRITE_BASE}/${getIdFromUrl(variety.pokemon.url)}.png`}
+                      alt={variety.pokemon.name}
+                    />
+                    <span>
+                      {variety.pokemon.name
+                        .replace("-mega", " Mega")
+                        .replaceAll("-", " ")}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Alternate Forms */}
+          {alternateForms.length > 0 && (
+            <div className="content-card alternate-forms">
+              <h3>Alternate Forms</h3>
+
+              <div className="alternate-form-list">
+                {alternateForms.map((variety) => (
+                  <div className="alternate-form" key={variety.pokemon.name}>
+                    <img
+                      src={`${SPRITE_BASE}/${getIdFromUrl(variety.pokemon.url)}.png`}
+                      alt={variety.pokemon.name}
+                    />
+                    <span>{variety.pokemon.name.replaceAll("-", " ")}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-
-        {/* Alternate Forms */}
-        {alternateForms.length > 0 && (
-          <div className="content-card alternate-forms">
-            <h3>Alternate Forms</h3>
-
-            <div className="alternate-form-list">
-              {alternateForms.map((variety) => (
-                <div className="alternate-form" key={variety.pokemon.name}>
-                  <img
-                    src={`${SPRITE_BASE}/${getIdFromUrl(variety.pokemon.url)}.png`}
-                    alt={variety.pokemon.name}
-                  />
-                  <span>{variety.pokemon.name.replaceAll("-", " ")}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Mega Forms */}
-        {megaForms.length > 0 && (
-          <div className="content-card mega-forms">
-            <h3>Mega Forms</h3>
-
-            <div className="mega-form-list">
-              {megaForms.map((variety) => (
-                <div className="mega-form" key={variety.pokemon.name}>
-                  <img
-                    src={`${SPRITE_BASE}/${getIdFromUrl(variety.pokemon.url)}.png`}
-                    alt={variety.pokemon.name}
-                  />
-                  <span>
-                    {variety.pokemon.name
-                      .replace("-mega", " Mega")
-                      .replaceAll("-", " ")}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
