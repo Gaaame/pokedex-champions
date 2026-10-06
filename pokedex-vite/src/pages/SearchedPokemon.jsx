@@ -153,7 +153,7 @@ const SearchedPokemon = () => {
       <div className="pokemon-details">
         <div className="searched-pokemon_info">
           <h4>{selectedPokemon.name}</h4>
-          <h3>{genus}</h3>
+          <h3>The {genus}</h3>
 
           <div className="type">
             {selectedPokemon.types.map((type) => (

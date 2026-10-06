@@ -31,10 +31,6 @@ const Stats = ({ stats }) => {
 
   return (
     <div className="stats">
-      <div className="stats-title">
-        <h3>Base Stats</h3>
-      </div>
-
       {statList.map((stat) => (
         <div className="stat" key={stat.name}>
           <div className="stat-info">
