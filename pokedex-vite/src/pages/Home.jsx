@@ -5,6 +5,39 @@ import Header from "../components/Header";
 import Feed from "../components/Feed";
 import LoadingScreen from "../components/LoadingScreen";
 
+const API = "https://pokeapi.co/api/v2";
+
+// Module-level cache so going back/forward a page doesn't refetch
+const cache = new Map();
+
+async function getJSON(url) {
+  if (cache.has(url)) return cache.get(url);
+
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`${response.status} ${url}`);
+  }
+
+  const data = await response.json();
+  cache.set(url, data);
+  return data;
+}
+
+// Edit this to match which forms Champions actually allows.
+// Keeps default forms, megas (incl. mega-x/y/z), regionals, etc.
+const EXCLUDED_FORMS =
+  /-(gmax|totem|starter|cap|cosplay|rock-star|belle|pop-star|phd|libre|original|partner|world|eternamax|build|battle-bond)/;
+
+function isAllowedForm(name, isDefault) {
+  if (isDefault) return true;
+  return !EXCLUDED_FORMS.test(name);
+}
+
+// Stricter alternative: only megas + regional forms
+// function isAllowedForm(name, isDefault) {
+//   return isDefault || /-(mega|alola|galar|hisui|paldea)/.test(name);
+// }
+
 const Home = () => {
   // Limit to pokemon champions roster
   const championsMC = [
@@ -47,7 +80,7 @@ const Home = () => {
     1018, 1019,
   ];
 
-  const ITEMS_PER_PAGE = 50;
+  const ITEMS_PER_PAGE = 50; // species per page (forms add extra cards)
 
   const [pokemons, setPokemons] = useState([]);
 
@@ -95,37 +128,53 @@ const Home = () => {
 
   useEffect(() => {
     let isMounted = true;
+    let timeoutId;
 
     async function fetchPokemon() {
       setLoading(true);
 
       try {
-        // Get the current 50 Pokemon from the Champions roster
-        const currentPokemon = championsMC.slice(
-          offset,
-          offset + ITEMS_PER_PAGE,
+        // Current page of species IDs from the Champions roster
+        const currentIds = championsMC.slice(offset, offset + ITEMS_PER_PAGE);
+
+        // 1. Fetch each species so we can see all of its forms
+        const speciesResults = await Promise.allSettled(
+          currentIds.map((id) => getJSON(`${API}/pokemon-species/${id}`)),
         );
 
-        // Fetch Pokemon data from PokeAPI
-        const pokemonData = await Promise.all(
-          currentPokemon.map(async (id) => {
-            const response = await fetch(
-              `https://pokeapi.co/api/v2/pokemon/${id}`,
-            );
+        const speciesList = speciesResults
+          .filter((r) => r.status === "fulfilled")
+          .map((r) => r.value);
 
-            if (!response.ok) {
-              throw new Error(`Pokemon ${id} not found`);
-            }
+        // 2. Collect every allowed variety (default, megas, regionals...)
+        const varieties = speciesList.flatMap((species) =>
+          species.varieties
+            .filter((v) => isAllowedForm(v.pokemon.name, v.is_default))
+            .map((v) => ({
+              speciesId: species.id,
+              url: v.pokemon.url,
+            })),
+        );
 
-            return response.json();
+        // 3. Fetch the actual pokemon data for each variety
+        const pokemonResults = await Promise.allSettled(
+          varieties.map(async (v) => {
+            const data = await getJSON(v.url);
+            return { ...data, speciesId: v.speciesId };
           }),
         );
+
+        const pokemonData = pokemonResults
+          .filter((r) => r.status === "fulfilled")
+          .map((r) => r.value)
+          // keep dex order, with forms right after their base species
+          .sort((a, b) => a.speciesId - b.speciesId || a.id - b.id);
 
         if (isMounted) {
           setPokemons(pokemonData);
 
           // Small loading delay
-          setTimeout(() => {
+          timeoutId = setTimeout(() => {
             if (isMounted) {
               setLoading(false);
             }
@@ -145,6 +194,7 @@ const Home = () => {
 
     return () => {
       isMounted = false;
+      clearTimeout(timeoutId);
     };
   }, [offset]);
 
