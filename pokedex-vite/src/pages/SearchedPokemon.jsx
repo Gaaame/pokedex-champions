@@ -38,19 +38,28 @@ const colours = {
 const SPRITE_BASE =
   "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home";
 
-const getIdFromUrl = (url) => url.split("/").filter(Boolean).pop();
+// NUMBER OF MOVES TO LOAD AT A TIME
+const MOVES_PER_PAGE = 20;
 
-const getBaseStat = (statsArray, name) =>
-  statsArray.find((s) => s.stat.name === name)?.base_stat ?? 0;
+const getIdFromUrl = (url) => {
+  return url.split("/").filter(Boolean).pop();
+};
+
+const getBaseStat = (statsArray, name) => {
+  return statsArray.find((s) => s.stat.name === name)?.base_stat ?? 0;
+};
 
 const SearchedPokemon = () => {
   const { pokemon } = useParams();
 
-  const [moves, setMoves] = useState([]);
   const [selectedPokemon, setSelectedPokemon] = useState(null);
   const [species, setSpecies] = useState(null);
 
+  const [moves, setMoves] = useState([]);
+  const [moveOffset, setMoveOffset] = useState(0);
+
   const [loading, setLoading] = useState(true);
+  const [movesLoading, setMovesLoading] = useState(false);
   const [error, setError] = useState(false);
 
   const [stats, setStats] = useState({
@@ -65,15 +74,22 @@ const SearchedPokemon = () => {
     speed: 0,
   });
 
+  /*
+   * FETCH POKEMON + SPECIES
+   */
   useEffect(() => {
     let cancelled = false;
 
-    async function fetchPokemon() {
+    const fetchPokemon = async () => {
       setLoading(true);
       setError(false);
 
+      // Reset moves when changing Pokémon
+      setMoves([]);
+      setMoveOffset(0);
+
       try {
-        // Fetch the selected Pokémon/form
+        // FETCH POKEMON
         const pokemonResponse = await fetch(
           `https://pokeapi.co/api/v2/pokemon/${pokemon}`,
         );
@@ -84,19 +100,95 @@ const SearchedPokemon = () => {
 
         const pokemonData = await pokemonResponse.json();
 
-        // Fetch the base species using the species URL
-        // returned by the Pokémon endpoint.
+        if (cancelled) return;
+
+        // FETCH SPECIES
+        // Using pokemonData.species.url allows Mega Forms
+        // and other alternate forms to load correctly.
         const speciesResponse = await fetch(pokemonData.species.url);
 
         if (!speciesResponse.ok) {
-          throw new Error("Pokemon species not found");
+          throw new Error("Species not found");
         }
 
         const speciesData = await speciesResponse.json();
 
-        // Fetch detailed information for every move
+        if (cancelled) return;
+
+        // SET POKEMON
+        setSelectedPokemon(pokemonData);
+
+        // SET SPECIES
+        setSpecies(speciesData);
+
+        // SET STATS
+        setStats({
+          height: (pokemonData.height / 3.048).toFixed(1),
+          weight: (pokemonData.weight / 10).toFixed(1),
+          exp: pokemonData.base_experience,
+
+          hp: getBaseStat(pokemonData.stats, "hp"),
+
+          attack: getBaseStat(pokemonData.stats, "attack"),
+
+          defence: getBaseStat(pokemonData.stats, "defense"),
+
+          splAttack: getBaseStat(pokemonData.stats, "special-attack"),
+
+          splDefence: getBaseStat(pokemonData.stats, "special-defense"),
+
+          speed: getBaseStat(pokemonData.stats, "speed"),
+        });
+
+        // IMPORTANT:
+        // We finish the main page loading here.
+        setLoading(false);
+      } catch (err) {
+        if (cancelled) return;
+
+        console.error(err);
+
+        setError(true);
+        setLoading(false);
+      }
+    };
+
+    fetchPokemon();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [pokemon]);
+
+  /*
+   * FETCH MOVES
+   *
+   * This runs separately from the main Pokémon request.
+   *
+   * Only MOVES_PER_PAGE moves are requested at a time.
+   */
+  useEffect(() => {
+    if (!selectedPokemon) return;
+
+    let cancelled = false;
+
+    const fetchMoves = async () => {
+      setMovesLoading(true);
+
+      try {
+        const moveList = selectedPokemon.moves.slice(
+          moveOffset,
+          moveOffset + MOVES_PER_PAGE,
+        );
+
+        // No more moves
+        if (moveList.length === 0) {
+          setMovesLoading(false);
+          return;
+        }
+
         const moveResults = await Promise.allSettled(
-          pokemonData.moves.map(async (item) => {
+          moveList.map(async (item) => {
             const response = await fetch(item.move.url);
 
             if (!response.ok) {
@@ -107,68 +199,68 @@ const SearchedPokemon = () => {
           }),
         );
 
-        const successfulMoves = moveResults
-          .filter((result) => result.status === "fulfilled")
-          .map((result) => result.value);
-
-        setMoves(successfulMoves);
-
         if (cancelled) return;
 
-        setSelectedPokemon(pokemonData);
-        setSpecies(speciesData);
-        setMoves(moveResults);
+        const successfulMoves = moveResults
+          .filter((result) => result.status === "fulfilled")
+          .map((result) => result.value)
+          .filter((move) => move && move.name);
 
-        setStats({
-          // Height: decimeters → feet
-          height: (pokemonData.height / 3.048).toFixed(1),
-
-          // Weight: hectograms → kilograms
-          weight: (pokemonData.weight / 10).toFixed(1),
-
-          exp: pokemonData.base_experience,
-
-          hp: getBaseStat(pokemonData.stats, "hp"),
-          attack: getBaseStat(pokemonData.stats, "attack"),
-          defence: getBaseStat(pokemonData.stats, "defense"),
-          splAttack: getBaseStat(pokemonData.stats, "special-attack"),
-          splDefence: getBaseStat(pokemonData.stats, "special-defense"),
-          speed: getBaseStat(pokemonData.stats, "speed"),
-        });
-
-        setLoading(false);
+        // Add new moves instead of replacing existing moves
+        setMoves((currentMoves) => [...currentMoves, ...successfulMoves]);
       } catch (err) {
         if (cancelled) return;
 
-        console.error(err);
-        setError(true);
-        setLoading(false);
+        console.error("Move fetch error:", err);
+      } finally {
+        if (!cancelled) {
+          setMovesLoading(false);
+        }
       }
-    }
+    };
 
-    fetchPokemon();
+    fetchMoves();
 
     return () => {
       cancelled = true;
     };
-  }, [pokemon]);
+  }, [selectedPokemon, moveOffset]);
 
-  // Loading state
+  /*
+   * LOAD MORE MOVES
+   */
+  const handleLoadMoreMoves = () => {
+    if (movesLoading || !selectedPokemon) {
+      return;
+    }
+
+    setMoveOffset((currentOffset) => currentOffset + MOVES_PER_PAGE);
+  };
+
+  /*
+   * LOADING
+   */
   if (loading) {
     return <LoadingScreen />;
   }
 
-  // Error state
+  /*
+   * ERROR
+   */
   if (error || !selectedPokemon || !species) {
     return <ErrorScreen />;
   }
 
-  // English genus
-  const genus = species.genera.find(
-    (item) => item.language.name === "en",
-  )?.genus;
+  /*
+   * GENUS
+   */
+  const genus =
+    species.genera.find((item) => item.language.name === "en")?.genus ||
+    "Unknown Pokémon";
 
-  // Split varieties once
+  /*
+   * FORMS
+   */
   const nonDefaultVarieties = species.varieties.filter((v) => !v.is_default);
 
   const megaForms = nonDefaultVarieties.filter((v) =>
@@ -179,28 +271,35 @@ const SearchedPokemon = () => {
     (v) => !v.pokemon.name.includes("-mega"),
   );
 
-  // Pokémon hero image
+  /*
+   * HERO IMAGE
+   */
   const heroImage =
     selectedPokemon.sprites.other?.home?.front_default ||
     selectedPokemon.sprites.front_default;
 
+  /*
+   * CHECK IF MORE MOVES EXIST
+   */
+  const hasMoreMoves =
+    moveOffset + MOVES_PER_PAGE < selectedPokemon.moves.length;
+
   return (
     <div className="searched-pokemon">
-      {/* Header */}
+      {/* BACK BUTTON */}
       <div className="searched-pokemon_header">
         <Link to="/">
           <Button label="Back" />
         </Link>
       </div>
 
-      {/* Pokemon Hero */}
+      {/* HERO */}
       <div className="pokemon-details">
         <div className="searched-pokemon_info">
           <h4>{selectedPokemon.name}</h4>
 
           <h3>The {genus}</h3>
 
-          {/* Types */}
           <div className="type">
             {selectedPokemon.types.map((type) => (
               <span
@@ -220,16 +319,16 @@ const SearchedPokemon = () => {
         </div>
       </div>
 
-      {/* Pokemon Information */}
+      {/* CONTENT */}
       <div className="pokemon-content">
-        {/* Row 1: Stats */}
+        {/* STATS */}
         <div className="content-card stats-card">
           <Stats stats={stats} />
         </div>
 
-        {/* Row 2: Abilities | Mega Forms | Alternate Forms */}
+        {/* ABILITIES + FORMS */}
         <div className="pokemon-content_row">
-          {/* Abilities */}
+          {/* ABILITIES */}
           <div className="content-card abilities">
             <h3>Abilities</h3>
 
@@ -244,7 +343,7 @@ const SearchedPokemon = () => {
             </div>
           </div>
 
-          {/* Mega Forms */}
+          {/* MEGA FORMS */}
           {megaForms.length > 0 && (
             <div className="content-card mega-forms">
               <h3>Mega Forms</h3>
@@ -270,7 +369,7 @@ const SearchedPokemon = () => {
             </div>
           )}
 
-          {/* Alternate Forms */}
+          {/* ALTERNATE FORMS */}
           {alternateForms.length > 0 && (
             <div className="content-card alternate-forms">
               <h3>Alternate Forms</h3>
@@ -293,49 +392,71 @@ const SearchedPokemon = () => {
           )}
         </div>
 
-        {/* Row 3: Moves */}
+        {/* MOVES */}
         <div className="content-card moves-card">
           <h3>Moves</h3>
 
-          {moves.length > 0 ? (
+          {/* LOADING */}
+          {movesLoading && moves.length === 0 && <p>Loading moves...</p>}
+
+          {/* MOVES */}
+          {moves.length > 0 && (
             <div className="move-list">
               {moves.map((move) => (
                 <div className="move-item" key={move.id}>
+                  {/* MOVE NAME */}
                   <div className="move-name">
                     {move.name.replaceAll("-", " ")}
                   </div>
 
+                  {/* MOVE DETAILS */}
                   <div className="move-details">
+                    {/* TYPE */}
                     <span
                       className="move-type"
                       style={{
-                        backgroundColor: colours[move.type.name],
+                        backgroundColor: colours[move.type?.name] || "#777",
                       }}
                     >
-                      {move.type.name}
+                      {move.type?.name || "Unknown"}
                     </span>
 
+                    {/* POWER */}
                     <span>
                       <strong>Power:</strong> {move.power ?? "—"}
                     </span>
 
+                    {/* ACCURACY */}
                     <span>
                       <strong>Accuracy:</strong> {move.accuracy ?? "—"}
                     </span>
 
+                    {/* PP */}
                     <span>
                       <strong>PP:</strong> {move.pp ?? "—"}
                     </span>
 
+                    {/* CATEGORY */}
                     <span className="move-category">
-                      {move.damage_class.name}
+                      {move.damage_class?.name || "Unknown"}
                     </span>
                   </div>
                 </div>
               ))}
             </div>
-          ) : (
-            <p>No moves found.</p>
+          )}
+
+          {/* NO MOVES */}
+          {!movesLoading && moves.length === 0 && <p>No moves found.</p>}
+
+          {/* LOAD MORE */}
+          {hasMoreMoves && (
+            <div className="moves-load-more">
+              <Button
+                label={movesLoading ? "Loading..." : "Show More Moves"}
+                onClick={handleLoadMoreMoves}
+              />
+            </div>
           )}
         </div>
       </div>

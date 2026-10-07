@@ -59,34 +59,105 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
 
-  min-width: 100px;
+  min-width: 110px;
+  min-height: 42px;
+
   padding: 0.65rem 1.25rem;
 
   background: #ffd700;
   color: #3f0ac7;
 
-  border: 2px solid transparent;
+  border: 2px solid #e6c200;
   border-radius: 8px;
 
   font-size: 0.9rem;
   font-weight: 700;
+  line-height: 1;
 
   cursor: pointer;
+
+  box-shadow:
+    0 3px 0 #c9a900,
+    0 5px 12px rgba(0, 0, 0, 0.08);
 
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
-    background-color 0.2s ease;
+    background-color 0.2s ease,
+    border-color 0.2s ease;
 }
+
+/* Hover */
 
 .btn:hover {
+  background: #ffe033;
+  border-color: #d4b200;
+
   transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+
+  box-shadow:
+    0 5px 0 #c9a900,
+    0 8px 16px rgba(0, 0, 0, 0.12);
 }
 
+/* Click */
+
 .btn:active {
-  transform: translateY(0);
+  transform: translateY(2px);
+
+  box-shadow:
+    0 1px 0 #c9a900,
+    0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Focus */
+
+.btn:focus-visible {
+  outline: 3px solid rgba(63, 10, 199, 0.3);
+  outline-offset: 3px;
+}
+
+/* Disabled */
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+
+  transform: none;
+
+  box-shadow:
+    0 2px 0 #b8b8b8,
+    0 3px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Prevent hover animation on disabled buttons */
+
+.btn:disabled:hover {
+  background: #ffd700;
+  border-color: #e6c200;
+
+  transform: none;
+}
+
+/* ========================================
+   Load More Moves
+======================================== */
+
+.moves-load-more {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  margin-top: 2rem;
+  padding-top: 1rem;
+
+  border-top: 1px solid #e2e8f0;
+}
+
+.moves-load-more .btn {
+  min-width: 170px;
 }
 
 /* ========================================
@@ -275,63 +346,86 @@ a {
 }
 
 /* ========================================
-  Error Screen
+   Error Screen
 ======================================== */
 
 .ErrorScreen {
   min-height: 70vh;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
   gap: 1rem;
+
   padding: 2rem 1rem;
+
   text-align: center;
 }
 
 /* Pokéball */
+
 .ErrorScreen__ball {
   position: relative;
+
   width: 110px;
   height: 110px;
+
   border-radius: 50%;
   border: 6px solid #222;
+
   background: linear-gradient(to bottom, #ee3b3b 0 46%, #222 46% 54%, #fff 54%);
+
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+
   animation: ErrorScreen-wobble 2s ease-in-out infinite;
+
   transform-origin: bottom center;
 }
 
 .ErrorScreen__ball-button {
   position: absolute;
+
   top: 50%;
   left: 50%;
+
   width: 30px;
   height: 30px;
+
   transform: translate(-50%, -50%);
+
   border-radius: 50%;
   border: 6px solid #222;
+
   background: #fff;
 }
 
 .ErrorScreen__title {
   margin: 0.5rem 0 0;
+
   font-size: 1.75rem;
   font-weight: 800;
 }
 
 .ErrorScreen__message {
   margin: 0;
+
   max-width: 420px;
+
   line-height: 1.5;
+
   opacity: 0.75;
 }
 
 .ErrorScreen__actions {
   display: flex;
   flex-wrap: wrap;
+
   gap: 0.75rem;
+
   justify-content: center;
+
   margin-top: 0.75rem;
 }
 
@@ -341,26 +435,25 @@ a {
   100% {
     transform: rotate(0deg);
   }
+
   10% {
     transform: rotate(-14deg);
   }
+
   20% {
     transform: rotate(12deg);
   }
+
   30% {
     transform: rotate(-8deg);
   }
+
   40% {
     transform: rotate(6deg);
   }
+
   50% {
     transform: rotate(-3deg);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ErrorScreen__ball {
-    animation: none;
   }
 }
 
@@ -379,6 +472,10 @@ a {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .ErrorScreen__ball {
+    animation: none;
   }
 }
 
@@ -408,4 +505,91 @@ a {
   .loadingText {
     font-size: 0.9rem;
   }
+
+  .moves-load-more {
+    margin-top: 1.5rem;
+    padding-top: 0.75rem;
+  }
+
+  .moves-load-more .btn {
+    width: 100%;
+    max-width: 220px;
+  }
+}
+
+/* ========================================
+   Buttons
+======================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 110px;
+  min-height: 42px;
+
+  padding: 0.65rem 1.25rem;
+
+  background: #ffd700;
+  color: #3f0ac7;
+
+  border: 2px solid #e6c200;
+  border-radius: 8px;
+
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 3px 0 #c9a900,
+    0 5px 12px rgba(0, 0, 0, 0.08);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.btn:hover {
+  background: #ffe033;
+  border-color: #d4b200;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 5px 0 #c9a900,
+    0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+.btn:active {
+  transform: translateY(2px);
+
+  box-shadow:
+    0 1px 0 #c9a900,
+    0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+.btn:focus-visible {
+  outline: 3px solid rgba(63, 10, 199, 0.3);
+  outline-offset: 3px;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+
+  box-shadow:
+    0 2px 0 #b8b8b8,
+    0 3px 8px rgba(0, 0, 0, 0.05);
+}
+
+.btn:disabled:hover {
+  background: #ffd700;
+  border-color: #e6c200;
+  transform: none;
 }
