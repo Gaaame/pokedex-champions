@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Feed from "../components/Feed";
 import LoadingScreen from "../components/LoadingScreen";
-import championsMC from "../data/champions";
+import championsMC from "../data/Champions";
 
 const API = "https://pokeapi.co/api/v2";
 

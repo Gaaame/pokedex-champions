@@ -115,10 +115,16 @@ const SearchedPokemon = () => {
         if (cancelled) return;
 
         // CHECK IF POKEMON IS IN CHAMPIONS ROSTER
-        if (!championIds.includes(pokemonData.id)) {
+        const speciesId = Number(
+          pokemonData.species.url.split("/").filter(Boolean).pop(),
+        );
+
+        if (
+          !championIds.includes(pokemonData.id) &&
+          !championIds.includes(speciesId)
+        ) {
           throw new Error("Pokemon is not in the Champions roster");
         }
-
         // FETCH SPECIES
         const speciesResponse = await fetch(pokemonData.species.url);
 
