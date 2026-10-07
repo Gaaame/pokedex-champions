@@ -64,6 +64,7 @@ const SearchedPokemon = () => {
     speed: 0,
   });
 
+  //FETCH POKEMON
   useEffect(() => {
     let cancelled = false;
 
@@ -72,16 +73,25 @@ const SearchedPokemon = () => {
       setError(false);
 
       try {
-        const [pokemonResponse, speciesResponse] = await Promise.all([
-          fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`),
-          fetch(`https://pokeapi.co/api/v2/pokemon-species/${pokemon}`),
-        ]);
+        // Fetch the selected Pokémon/form
+        const pokemonResponse = await fetch(
+          `https://pokeapi.co/api/v2/pokemon/${pokemon}`,
+        );
 
-        if (!pokemonResponse.ok || !speciesResponse.ok) {
+        if (!pokemonResponse.ok) {
           throw new Error("Pokemon not found");
         }
 
         const pokemonData = await pokemonResponse.json();
+
+        // Fetch the base species using the species URL returned
+        // by the Pokémon endpoint.
+        const speciesResponse = await fetch(pokemonData.species.url);
+
+        if (!speciesResponse.ok) {
+          throw new Error("Pokemon species not found");
+        }
+
         const speciesData = await speciesResponse.json();
 
         if (cancelled) return;
@@ -92,9 +102,12 @@ const SearchedPokemon = () => {
         setStats({
           // Height: decimeters → feet
           height: (pokemonData.height / 3.048).toFixed(1),
+
           // Weight: hectograms → kilograms
           weight: (pokemonData.weight / 10).toFixed(1),
+
           exp: pokemonData.base_experience,
+
           hp: getBaseStat(pokemonData.stats, "hp"),
           attack: getBaseStat(pokemonData.stats, "attack"),
           defence: getBaseStat(pokemonData.stats, "defense"),
@@ -106,6 +119,7 @@ const SearchedPokemon = () => {
         setLoading(false);
       } catch (err) {
         if (cancelled) return;
+
         console.error(err);
         setError(true);
         setLoading(false);
