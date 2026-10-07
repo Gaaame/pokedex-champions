@@ -34,7 +34,7 @@ const colours = {
   fairy: "#D685AD",
 };
 
-//GET SPITES
+// GET SPRITES
 const SPRITE_BASE =
   "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home";
 
@@ -46,6 +46,7 @@ const getBaseStat = (statsArray, name) =>
 const SearchedPokemon = () => {
   const { pokemon } = useParams();
 
+  const [moves, setMoves] = useState([]);
   const [selectedPokemon, setSelectedPokemon] = useState(null);
   const [species, setSpecies] = useState(null);
 
@@ -64,7 +65,6 @@ const SearchedPokemon = () => {
     speed: 0,
   });
 
-  //FETCH POKEMON
   useEffect(() => {
     let cancelled = false;
 
@@ -84,8 +84,8 @@ const SearchedPokemon = () => {
 
         const pokemonData = await pokemonResponse.json();
 
-        // Fetch the base species using the species URL returned
-        // by the Pokémon endpoint.
+        // Fetch the base species using the species URL
+        // returned by the Pokémon endpoint.
         const speciesResponse = await fetch(pokemonData.species.url);
 
         if (!speciesResponse.ok) {
@@ -94,10 +94,30 @@ const SearchedPokemon = () => {
 
         const speciesData = await speciesResponse.json();
 
+        // Fetch detailed information for every move
+        const moveResults = await Promise.allSettled(
+          pokemonData.moves.map(async (item) => {
+            const response = await fetch(item.move.url);
+
+            if (!response.ok) {
+              throw new Error(`Failed to fetch ${item.move.name}`);
+            }
+
+            return response.json();
+          }),
+        );
+
+        const successfulMoves = moveResults
+          .filter((result) => result.status === "fulfilled")
+          .map((result) => result.value);
+
+        setMoves(successfulMoves);
+
         if (cancelled) return;
 
         setSelectedPokemon(pokemonData);
         setSpecies(speciesData);
+        setMoves(moveResults);
 
         setStats({
           // Height: decimeters → feet
@@ -133,8 +153,15 @@ const SearchedPokemon = () => {
     };
   }, [pokemon]);
 
-  if (loading) return <LoadingScreen />;
-  if (error || !selectedPokemon || !species) return <ErrorScreen />;
+  // Loading state
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
+  // Error state
+  if (error || !selectedPokemon || !species) {
+    return <ErrorScreen />;
+  }
 
   // English genus
   const genus = species.genera.find(
@@ -143,13 +170,16 @@ const SearchedPokemon = () => {
 
   // Split varieties once
   const nonDefaultVarieties = species.varieties.filter((v) => !v.is_default);
+
   const megaForms = nonDefaultVarieties.filter((v) =>
     v.pokemon.name.includes("-mega"),
   );
+
   const alternateForms = nonDefaultVarieties.filter(
     (v) => !v.pokemon.name.includes("-mega"),
   );
 
+  // Pokémon hero image
   const heroImage =
     selectedPokemon.sprites.other?.home?.front_default ||
     selectedPokemon.sprites.front_default;
@@ -167,13 +197,17 @@ const SearchedPokemon = () => {
       <div className="pokemon-details">
         <div className="searched-pokemon_info">
           <h4>{selectedPokemon.name}</h4>
+
           <h3>The {genus}</h3>
 
+          {/* Types */}
           <div className="type">
             {selectedPokemon.types.map((type) => (
               <span
                 key={type.type.name}
-                style={{ backgroundColor: colours[type.type.name] }}
+                style={{
+                  backgroundColor: colours[type.type.name],
+                }}
               >
                 {type.type.name}
               </span>
@@ -187,9 +221,8 @@ const SearchedPokemon = () => {
       </div>
 
       {/* Pokemon Information */}
-      {/* Pokemon Information */}
       <div className="pokemon-content">
-        {/* Row 1: Stats (full width) */}
+        {/* Row 1: Stats */}
         <div className="content-card stats-card">
           <Stats stats={stats} />
         </div>
@@ -204,6 +237,7 @@ const SearchedPokemon = () => {
               {selectedPokemon.abilities.map((item) => (
                 <span key={item.ability.name}>
                   {item.ability.name.replaceAll("-", " ")}
+
                   {item.is_hidden && " (Hidden)"}
                 </span>
               ))}
@@ -219,9 +253,12 @@ const SearchedPokemon = () => {
                 {megaForms.map((variety) => (
                   <div className="mega-form" key={variety.pokemon.name}>
                     <img
-                      src={`${SPRITE_BASE}/${getIdFromUrl(variety.pokemon.url)}.png`}
+                      src={`${SPRITE_BASE}/${getIdFromUrl(
+                        variety.pokemon.url,
+                      )}.png`}
                       alt={variety.pokemon.name}
                     />
+
                     <span>
                       {variety.pokemon.name
                         .replace("-mega", " Mega")
@@ -242,14 +279,63 @@ const SearchedPokemon = () => {
                 {alternateForms.map((variety) => (
                   <div className="alternate-form" key={variety.pokemon.name}>
                     <img
-                      src={`${SPRITE_BASE}/${getIdFromUrl(variety.pokemon.url)}.png`}
+                      src={`${SPRITE_BASE}/${getIdFromUrl(
+                        variety.pokemon.url,
+                      )}.png`}
                       alt={variety.pokemon.name}
                     />
+
                     <span>{variety.pokemon.name.replaceAll("-", " ")}</span>
                   </div>
                 ))}
               </div>
             </div>
+          )}
+        </div>
+
+        {/* Row 3: Moves */}
+        <div className="content-card moves-card">
+          <h3>Moves</h3>
+
+          {moves.length > 0 ? (
+            <div className="move-list">
+              {moves.map((move) => (
+                <div className="move-item" key={move.id}>
+                  <div className="move-name">
+                    {move.name.replaceAll("-", " ")}
+                  </div>
+
+                  <div className="move-details">
+                    <span
+                      className="move-type"
+                      style={{
+                        backgroundColor: colours[move.type.name],
+                      }}
+                    >
+                      {move.type.name}
+                    </span>
+
+                    <span>
+                      <strong>Power:</strong> {move.power ?? "—"}
+                    </span>
+
+                    <span>
+                      <strong>Accuracy:</strong> {move.accuracy ?? "—"}
+                    </span>
+
+                    <span>
+                      <strong>PP:</strong> {move.pp ?? "—"}
+                    </span>
+
+                    <span className="move-category">
+                      {move.damage_class.name}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p>No moves found.</p>
           )}
         </div>
       </div>

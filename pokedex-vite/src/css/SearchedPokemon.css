@@ -1,6 +1,6 @@
-/* ================================
+/* =========================================================
    Main Page
-================================ */
+========================================================= */
 
 .searched-pokemon {
   min-height: 100vh;
@@ -17,9 +17,9 @@
   margin: 0 auto 1rem;
 }
 
-/* ================================
+/* =========================================================
    Pokemon Hero
-================================ */
+========================================================= */
 
 .pokemon-details {
   width: 100%;
@@ -35,9 +35,9 @@
   gap: 4rem;
 }
 
-/* ================================
+/* =========================================================
    Pokemon Information
-================================ */
+========================================================= */
 
 .searched-pokemon_info {
   width: 100%;
@@ -53,8 +53,8 @@
   line-height: 0.95;
 
   font-weight: 800;
-
   letter-spacing: -0.06em;
+
   text-transform: capitalize;
 }
 
@@ -67,16 +67,15 @@
   font-weight: 600;
 }
 
-/* ================================
+/* =========================================================
    Pokemon Types
-================================ */
+========================================================= */
 
 .searched-pokemon_info .type {
   display: flex;
   flex-wrap: wrap;
 
   gap: 0.75rem;
-
   margin-top: 1.5rem;
 }
 
@@ -98,9 +97,9 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
-/* ================================
+/* =========================================================
    Pokemon Image
-================================ */
+========================================================= */
 
 .previewImage {
   width: 100%;
@@ -129,9 +128,9 @@
   filter: drop-shadow(0 30px 30px rgba(0, 0, 0, 0.16));
 }
 
-/* ================================
+/* =========================================================
    Pokemon Content
-================================ */
+========================================================= */
 
 .pokemon-content {
   width: 100%;
@@ -147,6 +146,7 @@
 }
 
 /* Abilities | Mega Forms | Alternate Forms */
+
 .pokemon-content_row {
   display: flex;
   align-items: stretch;
@@ -154,17 +154,18 @@
   gap: 1.5rem;
 }
 
-/* flex: 1 1 0 + min-width: 0 = equal widths regardless of content */
 .pokemon-content_row > .content-card {
   flex: 1 1 0;
   min-width: 0;
 }
-/* ================================
+
+/* =========================================================
    Content Cards
-================================ */
+========================================================= */
 
 .content-card {
   width: 100%;
+
   padding: 1.5rem;
 
   border: 1px solid #e2e8f0;
@@ -183,21 +184,21 @@
   font-size: 1rem;
   font-weight: 700;
 
-  text-transform: uppercase;
   letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
-/* ================================
+/* =========================================================
    Stats
-================================ */
+========================================================= */
 
 .stats-card {
   min-width: 0;
 }
 
-/* ================================
+/* =========================================================
    Abilities
-================================ */
+========================================================= */
 
 .abilities {
   min-width: 0;
@@ -217,7 +218,6 @@
   border-radius: 8px;
 
   background: #f8fafc;
-
   color: #334155;
 
   font-size: 0.9rem;
@@ -236,9 +236,9 @@
   box-shadow: 0 5px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* ================================
+/* =========================================================
    Forms
-================================ */
+========================================================= */
 
 .alternate-forms,
 .mega-forms {
@@ -262,7 +262,6 @@
 
   display: flex;
   flex-direction: column;
-
   align-items: center;
   justify-content: center;
 
@@ -304,9 +303,95 @@
   text-transform: capitalize;
 }
 
-/* ================================
+/* =========================================================
+   Moves
+========================================================= */
+
+.moves-card {
+  width: 100%;
+}
+
+.move-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 12px;
+
+  max-height: 500px;
+
+  padding-right: 6px;
+
+  overflow-y: auto;
+}
+
+.move-item {
+  padding: 14px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+
+  background: #f8fafc;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.move-item:hover {
+  transform: translateY(-2px);
+
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.06);
+}
+
+.move-name {
+  margin-bottom: 10px;
+
+  color: #1e293b;
+
+  font-size: 1rem;
+  font-weight: 700;
+
+  text-transform: capitalize;
+}
+
+.move-details {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+
+  gap: 8px;
+
+  color: #64748b;
+
+  font-size: 0.8rem;
+}
+
+.move-details span {
+  text-transform: capitalize;
+}
+
+.move-type {
+  padding: 4px 10px;
+
+  border-radius: 999px;
+
+  color: #ffffff;
+
+  font-weight: 600;
+}
+
+.move-category {
+  padding: 4px 8px;
+
+  border-radius: 6px;
+
+  background: #e2e8f0;
+  color: #475569;
+}
+
+/* =========================================================
    Tablet
-================================ */
+========================================================= */
 
 @media (max-width: 900px) {
   .pokemon-details {
@@ -323,9 +408,9 @@
   }
 }
 
-/* ================================
+/* =========================================================
    Mobile
-================================ */
+========================================================= */
 
 @media (max-width: 700px) {
   .searched-pokemon {
@@ -364,6 +449,7 @@
   .pokemon-content {
     gap: 1rem;
   }
+
   .content-card {
     padding: 1.25rem;
   }
@@ -372,11 +458,15 @@
   .mega-form-list {
     justify-content: center;
   }
+
+  .move-list {
+    grid-template-columns: 1fr;
+  }
 }
 
-/* ================================
+/* =========================================================
    Small Mobile
-================================ */
+========================================================= */
 
 @media (max-width: 450px) {
   .searched-pokemon {
