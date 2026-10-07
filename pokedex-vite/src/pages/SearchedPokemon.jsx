@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
+import championsMC from "../data/champions";
 
 // COMPONENTS
 import LoadingScreen from "../components/LoadingScreen";
@@ -7,10 +8,10 @@ import ErrorScreen from "../components/ErrorScreen";
 import Button from "../components/Button";
 import Stats from "../components/Stats";
 
-import PokemonHero from "../components/Pokemon/PokemonHero";
-import PokemonAbilities from "../components/Pokemon/PokemonAbilities";
-import PokemonForms from "../components/Pokemon/PokemonForms";
-import PokemonMoves from "../components/Pokemon/PokemonMoves";
+import PokemonHero from "../components/pokemon/PokemonHero";
+import PokemonAbilities from "../components/pokemon/PokemonAbilities";
+import PokemonForms from "../components/pokemon/PokemonForms";
+import PokemonMoves from "../components/pokemon/PokemonMoves";
 
 // STYLES
 import "../css/SearchedPokemon.css";
@@ -41,6 +42,9 @@ const colours = {
 
 // NUMBER OF MOVES TO LOAD AT A TIME
 const MOVES_PER_PAGE = 20;
+
+// ALL CHAMPIONS POKEMON IDS
+const championIds = Object.values(championsMC).flat();
 
 // GET ID FROM POKEMON API URL
 const getIdFromUrl = (url) => {
@@ -110,9 +114,12 @@ const SearchedPokemon = () => {
 
         if (cancelled) return;
 
+        // CHECK IF POKEMON IS IN CHAMPIONS ROSTER
+        if (!championIds.includes(pokemonData.id)) {
+          throw new Error("Pokemon is not in the Champions roster");
+        }
+
         // FETCH SPECIES
-        // Using pokemonData.species.url allows
-        // Mega Forms and alternate forms to load correctly.
         const speciesResponse = await fetch(pokemonData.species.url);
 
         if (!speciesResponse.ok) {
@@ -161,7 +168,6 @@ const SearchedPokemon = () => {
       cancelled = true;
     };
   }, [pokemon]);
-
   // ========================================
   // FETCH MOVES
   // ========================================
