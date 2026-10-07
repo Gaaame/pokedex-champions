@@ -36,7 +36,7 @@ The project focuses on Pokémon from **Pokémon Champions**, allowing users to b
 - **PokéAPI**
 - **Vite**
 
-## 📡 API
+## API
 
 This project uses [PokéAPI](https://pokeapi.co/) to retrieve Pokémon data.
 
