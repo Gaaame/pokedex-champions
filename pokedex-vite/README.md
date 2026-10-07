@@ -1,16 +1,40 @@
-# React + Vite
+# Pokémon Champions Pokédex
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A responsive Pokémon Pokédex built with **React** and the **PokéAPI**.
 
-Currently, two official plugins are available:
+The project focuses on Pokémon from **Pokémon Champions**, allowing users to browse the available roster, search for individual Pokémon, and view detailed information such as stats, types, abilities, forms, and moves.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- Browse Pokémon Champions roster
+- Search for any Pokémon
+- View detailed Pokémon information
+- Pokémon sprites from PokéAPI
+- Pokémon types and type-based styling
+- Base stats with visual stat bars
+- Abilities and forms
+- Move information
+- Load moves progressively with a **Show More Moves** button
+- Pagination for the Pokémon roster
+- Loading and error screens
+- Responsive design
+- Search-friendly Pokémon routes
+- Session-based pagination state
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Built With
 
-## Expanding the Oxlint configuration
+- **React**
+- **JavaScript**
+- **React Router**
+- **CSS**
+- **PokéAPI**
+- **Vite**
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## 📡 API
+
+This project uses [PokéAPI](https://pokeapi.co/) to retrieve Pokémon data.
+
+Main API endpoint:
+
+```text
+https://pokeapi.co/api/v2
